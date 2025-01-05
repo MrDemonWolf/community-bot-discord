@@ -1,6 +1,7 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
-import env from "./utils/env";
 
+import { env } from "./utils/env";
+import { prismaConnect } from "./database";
 /**
  * Import Environment variables
  */
@@ -23,6 +24,11 @@ export const client = new Client({
 client.on(Events.ClientReady, () => {
   readyEvt(client);
 });
+
+/**
+ * Connect to the database
+ */
+prismaConnect();
 
 /**
  * Start Discord bot

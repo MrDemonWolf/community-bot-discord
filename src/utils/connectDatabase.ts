@@ -1,19 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import consola from "consola";
 
-const globalForPrisma = global as unknown as {
-  prisma: PrismaClient | undefined;
-};
-
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    log: ["query"],
-  });
-
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
-
-export async function prismaConnect() {
+export async function connectDatabase() {
   /**
    * Load Prsima Client and connect to Prisma Server if failed to connect, throw error.
    */

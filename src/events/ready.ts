@@ -1,45 +1,25 @@
 import type { Client } from "discord.js";
-import { PrismaClient } from "@prisma/client";
-
 import consola from "consola";
 
+import { prisma } from "../database";
+import { setActivity } from "../utils/setActivity";
+
 export async function readyEvt(client: Client) {
-  if (!client.user)
-    return consola.error({
+  if (!client.user) {
+    consola.error({
       message: `[Discord Event Logger - ReadyEvt] Discord bot is not ready`,
       badge: true,
       level: "error",
       timestamp: new Date(),
     });
+    process.exit(1);
+  }
 
   consola.ready({
-    message: "Discord bot is ready! 🐺 🐾",
+    message: "[Discord Event Logger - ReadyEvt] Discord bot is ready",
     badge: true,
     timestamp: new Date(),
   });
-
-  /**
-   * Load Prsima Client and connect to Prisma Server if failed to connect, throw error.
-   */
-  const prisma = new PrismaClient();
-
-  prisma
-    .$connect()
-    .then(async () => {
-      await prisma.$disconnect();
-      consola.success({
-        message: `Prisma: Connected`,
-        badge: true,
-      });
-    })
-    .catch(async (err: any) => {
-      consola.error({
-        message: `[Prisma] Failed to connect: ${err.message}`,
-        badge: true,
-        timestamp: new Date(),
-      });
-      process.exit(1);
-    });
 
   /**
    * Check if guilds exist in the database and add them if they don't.
@@ -71,4 +51,10 @@ export async function readyEvt(client: Client) {
       });
     }
   });
+
+  /**
+   * Apply the bot's activity status also update every hour.
+   */
+  setActivity(client);
+  setInterval(() => setActivity(client), 60 * 60 * 1000);
 }

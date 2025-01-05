@@ -21,6 +21,7 @@ export async function guildCreate(guild: Guild) {
         guildId: guild.id,
       },
     });
+
     consola.success({
       message: `[Discord Event Logger - GuildCreateEvt] Created guild ${guild.name} (ID: ${guild.id}) in the database`,
       badge: true,

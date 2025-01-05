@@ -8,6 +8,7 @@ export async function guildDelete(guild: Guild) {
     const guildExists = await prisma.guild.findUnique({
       where: { guildId: guild.id },
     });
+
     if (!guildExists) {
       return consola.info({
         message: `[Discord Event Logger - GuildDeleteEvt] Skipping non-existent guild ${guild.name} (ID: ${guild.id})`,
@@ -18,6 +19,7 @@ export async function guildDelete(guild: Guild) {
     await prisma.guild.delete({
       where: { guildId: guild.id },
     });
+
     consola.success({
       message: `[Discord Event Logger - GuildDeleteEvt] Deleted guild ${guild.name} (ID: ${guild.id}) from the database`,
       badge: true,

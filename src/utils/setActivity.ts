@@ -3,19 +3,30 @@ import type { Client } from "discord.js";
 
 import consola from "consola";
 
-export function setActivity(client: Client): void {
+export function setActivity(client: Client) {
   try {
-    client.user?.setActivity("Spreading Paw-sitivity 🐾", {
-      type: ActivityType.Custom,
+    if (!client.user)
+      return consola.error({
+        message:
+          "[Discord Event Logger - setActivity] Discord bot is not ready",
+        badge: true,
+        level: "error",
+        timestamp: new Date(),
+      });
+
+    client.user.setActivity("Guarding the Lair", {
+      type: ActivityType.Playing,
     });
+
     consola.success({
-      message: "Discord has been activity set",
+      message: `[Discord Event Logger - setActivity] Set custom discord activity to 'Guarding the Lair'`,
       badge: true,
     });
   } catch (err) {
     consola.error({
-      message: `Error setting custom discord activity: ${err}`,
+      message: `[Discord Event Logger - setActivity] Error setting custom discord activity: ${err}`,
       badge: true,
+      timestamp: new Date(),
     });
   }
 }
