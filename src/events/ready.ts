@@ -25,7 +25,7 @@ export async function readyEvt(client: Client) {
   /**
    * Check if guilds exist in the database and add them if they don't.
    */
-  const currentGuilds = await prisma.guild.findMany();
+  const currentGuilds = await prisma.discordGuild.findMany();
 
   const guildsToAdd = client.guilds.cache.filter(
     (guild) =>
@@ -34,7 +34,7 @@ export async function readyEvt(client: Client) {
 
   guildsToAdd.forEach(async (guild) => {
     try {
-      await prisma.guild.create({
+      await prisma.discordGuild.create({
         data: {
           guildId: guild.id,
         },

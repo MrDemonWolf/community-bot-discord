@@ -5,7 +5,7 @@ import { prisma } from "../database";
 
 export async function guildCreate(guild: Guild) {
   try {
-    const existingGuild = await prisma.guild.findUnique({
+    const existingGuild = await prisma.discordGuild.findUnique({
       where: { guildId: guild.id },
     });
 
@@ -16,7 +16,7 @@ export async function guildCreate(guild: Guild) {
       });
     }
 
-    await prisma.guild.create({
+    await prisma.discordGuild.create({
       data: {
         guildId: guild.id,
       },

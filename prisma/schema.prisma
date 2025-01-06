@@ -13,11 +13,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Guild {
-  id                       String   @id @default(uuid())
-  guildId                  String   @unique
+model DiscordGuild {
+  id                       String          @id @default(uuid())
+  guildId                  String          @unique
   twitchChannel            String?
   twitchChannelScheduleURI String?
-  joinedAt                 DateTime @default(now())
-  updatedAt                DateTime @updatedAt
+  joinedAt                 DateTime        @default(now())
+  updatedAt                DateTime        @updatedAt
+  TwitchChannel            TwitchChannel[]
+}
+
+model TwitchChannel {
+  id              String        @id @default(uuid())
+  twitchChannelId String        @unique
+  joinedAt        DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  DiscordGuild    DiscordGuild? @relation(fields: [guildId], references: [id])
+  guildId         String?
 }

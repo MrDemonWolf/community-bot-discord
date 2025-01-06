@@ -5,7 +5,7 @@ import { prisma } from "../database";
 
 export async function guildDelete(guild: Guild) {
   try {
-    const guildExists = await prisma.guild.findUnique({
+    const guildExists = await prisma.discordGuild.findUnique({
       where: { guildId: guild.id },
     });
 
@@ -16,7 +16,7 @@ export async function guildDelete(guild: Guild) {
       });
     }
 
-    await prisma.guild.delete({
+    await prisma.discordGuild.delete({
       where: { guildId: guild.id },
     });
 
