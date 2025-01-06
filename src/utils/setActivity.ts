@@ -14,8 +14,8 @@ export function setActivity(client: Client) {
         timestamp: new Date(),
       });
 
-    client.user.setActivity("Guarding the Lair", {
-      type: ActivityType.Playing,
+    client.user.setActivity("over the Wolf Lair 🐺", {
+      type: ActivityType.Watching,
     });
 
     consola.success({
