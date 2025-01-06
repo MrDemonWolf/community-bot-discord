@@ -1,4 +1,5 @@
 import type { Client } from "discord.js";
+import cron from "node-cron";
 import consola from "consola";
 
 import { prisma } from "../database";
@@ -53,8 +54,10 @@ export async function readyEvt(client: Client) {
   });
 
   /**
-   * Apply the bot's activity status also update every hour.
+   * Apply the bot's activity status on first run and every 60 minutes.
    */
   setActivity(client);
-  setInterval(() => setActivity(client), 60 * 60 * 1000);
+  cron.schedule("0 * * * *", () => {
+    setActivity(client);
+  });
 }
