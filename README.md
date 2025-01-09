@@ -1,6 +1,6 @@
-# Community Bot for MrDemonWolf, Inc.
+# 🐺 Community Bot for MrDemonWolf, Inc. - Discord 🐾
 
-Community Discord bot for MrDemonWolf, Inc. Community
+![Community Bot Banner](banner.jpg)
 
 Join our community across various platforms! Discover more about us, get the latest updates, and engage with our content. Built by a passionate furry web developer, MrDemonWolf, who loves tech, gaming, and creating engaging experiences for the community.
 
