@@ -35,7 +35,7 @@ Follow these steps to set up your database quickly using Docker:
 
 ### Setting Up Discord Bot Integration
 
-Follow these steps to create your Discord bot application and obtain your bot token:
+Follow these steps to create your Discord bot application and obtain your bot credentials:
 
 1. **Visit the Discord Developer Portal**  
    Go to the [Discord Developer Portal](https://discord.com/developers/applications).
@@ -50,10 +50,11 @@ Follow these steps to create your Discord bot application and obtain your bot to
    - Navigate to the **"Bot"** tab on the left-hand menu.
    - Click **"Add Bot"**, then confirm by clicking **"Yes, do it!"**.
 
-4. **Copy Your Bot Token**
+4. **Copy Your Credentials**
 
-   - Under the **"Bot"** tab, click **"Reset Token"**, then **"Yes, do it!"**.
-   - Copy the generated token and keep it secure.
+   - Under the **"General Information"** tab, copy the **Application ID** and **Public Key**.
+   - Under the **"Bot"** tab, click **"Reset Token"**, then **"Yes, do it!"** to generate a new bot token.
+   - Copy the **Bot Token**.
 
 5. **Add Your Bot to a Server**
 
@@ -63,20 +64,22 @@ Follow these steps to create your Discord bot application and obtain your bot to
    - Copy the generated URL and open it in your browser to invite the bot to your server.
 
 6. **Configure Your Bot**  
-   Add the bot token to the `.env` file:
+   Add the credentials to the `.env` file:
    ```env
+   DISCORD_APPLICATION_ID=your-application-id
+   DISCORD_APPLICATION_PUBLIC_KEY=your-public-key
    DISCORD_BOT_TOKEN=your-bot-token
    ```
 
 ---
 
-**Note:** Ensure you keep your bot token secure. Do not share it publicly.
+**Note:** Ensure you keep your bot credentials secure. Do not share them publicly.
 
 ---
 
 ## License
 
-![GitHub license](https://img.shields.io/github/license/MrDemonWolf/community-bot-discord.svg?style=for-the-badge&logo=github)
+![GitHub license](https://img.shields.io/github/license/MrDemonWolf/community-bot-twitch.svg?style=for-the-badge&logo=github)
 
 ---
 
