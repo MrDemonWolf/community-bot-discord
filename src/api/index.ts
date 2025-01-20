@@ -30,7 +30,7 @@ app.use(
  * @param {number} port - Port
  */
 app.set("host", process.env.HOST || "localhost");
-app.set("port", process.env.PORT || 8080);
+app.set("port", process.env.PORT || 3000);
 
 /**
  * Initialize routes
