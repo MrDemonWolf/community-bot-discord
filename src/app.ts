@@ -5,6 +5,10 @@ import { env } from "./utils/env";
 import { prismaConnect } from "./database";
 import api from "./api";
 
+export let botStatus = {
+  status: "offline",
+};
+
 /**
  * Import Environment variables
  */
@@ -25,7 +29,16 @@ export const client = new Client({
  * Discord bot event listeners
  */
 client.on(Events.ClientReady, () => {
+  botStatus.status = "online";
   readyEvt(client);
+});
+
+client.on(Events.ShardDisconnect, () => {
+  botStatus.status = "offline";
+});
+
+client.on(Events.ShardError, () => {
+  botStatus.status = "error";
 });
 
 /**
