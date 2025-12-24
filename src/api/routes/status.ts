@@ -10,10 +10,12 @@ const router: express.Router = express.Router();
 router.get("/", async (_req, res) => {
   try {
     res.json({
-      uptime: process.uptime(),
-      timestamp: new Date().toISOString(),
-      version: process.env["npm_package_version"] || "1.7.0",
       status: "online",
+      uptime: process.uptime(),
+      version: process.env["npm_package_version"] || "1.7.0",
+      timestamp: new Date().toISOString(),
+      path: "/api/status",
+      method: "GET",
     });
   } catch (err) {
     logger.error("API", "Status endpoint error", err);

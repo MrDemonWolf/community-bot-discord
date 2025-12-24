@@ -109,11 +109,11 @@ redis
  * Start API server.
  */
 
-api.listen(api.get("port"), () => {
+const server = api.listen(api.get("port"), () => {
   logger.api.started(api.get("host"), api.get("port"));
 });
 
-api.on("error", (err: unknown) => {
+server.on("error", (err: unknown) => {
   logger.api.error(err);
   process.exit(1);
 });
