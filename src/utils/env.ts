@@ -11,7 +11,8 @@ const envSchema = z.object({
       try {
         const parsedUrl = new URL(url);
         return (
-          parsedUrl.protocol === "postgresql:" &&
+          (parsedUrl.protocol === "postgresql:" ||
+            parsedUrl.protocol === "postgres:") &&
           parsedUrl.hostname &&
           parsedUrl.pathname.length > 1
         );
