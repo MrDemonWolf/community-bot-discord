@@ -5,7 +5,7 @@ set -e
 
 # Run database migrations
 echo "Running database migrations..."
-pnpm prisma:migrate push
+pnpm prisma:migrate
 
 # The exec "$@" command replaces the script with the CMD from the Dockerfile.
 # This ensures your application becomes the main process (PID 1) and can receive OS signals correctly.
