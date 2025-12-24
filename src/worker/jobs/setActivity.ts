@@ -47,25 +47,29 @@ export default async (client: Client) => {
 
     // const activity = await randomActivity();
 
-    const activity = null; // Temporarily disable random activities
-
-    if (!activity) {
-      logger.warn(
-        "Discord - Activity",
-        "No custom discord activity found, using default activity"
-      );
-      const safeActivityType = getActivityType(defaultActivityType);
-      client.user.setActivity(defaultActivity, {
-        type: safeActivityType,
-        url: defaultActivityUrl,
-      });
-      logger.success("Discord - Activity", "Activity has been set", {
-        activity: defaultActivity,
-        type: safeActivityType,
-        url: defaultActivityUrl,
-      });
-      return true;
-    }
+    // if (!activity) {
+    //   logger.warn(
+    //     "Discord - Activity",
+    //     "No custom discord activity found, using default activity"
+    //   );
+    //   const safeActivityType = getActivityType(defaultActivityType);
+    //   client.user.setActivity(defaultActivity, {
+    //     type: safeActivityType,
+    //     url: defaultActivityUrl,
+    //   });
+    //   logger.success("Discord - Activity", "Activity has been set", {
+    //     activity: defaultActivity,
+    //     type: safeActivityType,
+    //     url: defaultActivityUrl,
+    //   });
+    //   return true;
+    // }
+    logger.success("Discord - Activity", "Activity has been set", {
+      activity: defaultActivity,
+      type: getActivityType(defaultActivityType),
+      url: defaultActivityUrl,
+    });
+    return true;
 
     // const safeActivityType = getActivityType(activity.type);
     // client.user.setActivity(activity.activity, {

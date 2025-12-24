@@ -1,5 +1,6 @@
 import type { Client } from "discord.js";
 
+import setActivity from "../worker/jobs/setActivity.js";
 import { pruneGuilds, ensureGuildExists } from "../utils/guildDatabase.js";
 import logger from "../utils/logger.js";
 
@@ -48,4 +49,9 @@ export async function readyEvent(client: Client) {
   } catch (err) {
     logger.error("Discord - Event (Ready)", "Error during ready event", err);
   }
+
+  /**
+   * Apply the bot's activity status on first run then the worker will handle it every configured interval.
+   */
+  await setActivity(client);
 }
