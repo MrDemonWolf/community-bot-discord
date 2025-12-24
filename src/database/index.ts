@@ -1,39 +1,23 @@
-import { PrismaClient } from "@prisma/client";
-import consola from "consola";
+import { PrismaClient } from "../prisma/generated/prisma/client.js";
+import { PrismaPg } from "@prisma/adapter-pg";
+
+import env from "../utils/env.js";
 
 const globalForPrisma = global as unknown as {
   prisma: PrismaClient | undefined;
 };
 
+const adapter = new PrismaPg({
+  connectionString: env.DATABASE_URL,
+});
+
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    log: ["query"],
+    adapter,
+    log: env.NODE_ENV === "production" ? [] : ["query"],
   });
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
-
-export async function prismaConnect() {
-  /**
-   * Load Prsima Client and connect to Prisma Server if failed to connect, throw error.
-   */
-  const prisma = new PrismaClient();
-
-  await prisma
-    .$connect()
-    .then(async () => {
-      await prisma.$disconnect();
-      return consola.ready({
-        message: `[Discord Event Logger - ReadyEvt] Connected to Prisma Server`,
-        badge: true,
-      });
-    })
-    .catch((err: any) => {
-      consola.error({
-        message: `[Discord Event Logger - ReadyEvt] Failed to connect to Prisma Server: ${err}`,
-        badge: true,
-        timestamp: new Date(),
-      });
-      process.exit(1);
-    });
+if (env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
 }

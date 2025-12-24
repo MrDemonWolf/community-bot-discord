@@ -1,7 +1,7 @@
 import { ActivityType } from "discord.js";
 import type { Client } from "discord.js";
 
-import consola from "consola";
+import { consola } from "consola";
 
 export function setActivity(client: Client) {
   try {

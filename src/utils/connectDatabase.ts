@@ -1,11 +1,19 @@
-import { PrismaClient } from "@prisma/client";
-import consola from "consola";
+import { PrismaClient } from "../prisma/generated/prisma/client.js";
+import { PrismaPg } from "@prisma/adapter-pg";
+
+import env from "../utils/env.js";
+import { consola } from "consola";
 
 export async function connectDatabase() {
   /**
    * Load Prsima Client and connect to Prisma Server if failed to connect, throw error.
    */
-  const prisma = new PrismaClient();
+  const adapter = new PrismaPg({
+    connectionString: env.DATABASE_URL,
+  });
+  const prisma = new PrismaClient({
+    adapter,
+  });
 
   await prisma
     .$connect()

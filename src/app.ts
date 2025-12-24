@@ -1,74 +1,73 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
-import consola from "consola";
 
-import { env } from "./utils/env";
-import { prismaConnect } from "./database";
-import api from "./api";
-
-export let botStatus = {
-  status: "offline",
-};
+import env from "./utils/env.js";
+import logger from "./utils/logger.js";
 
 /**
- * Import Environment variables
+ * Import events from the events folder.
  */
-const DISCORD_TOKEN = env.DISCORD_APPLICATION_BOT_TOKEN;
+import { readyEvent } from "./events/ready.js";
+import { guildCreateEvent } from "./events/guildCreate.js";
+import { guildDeleteEvent } from "./events/guildDelete.js";
+import { interactionCreateEvent } from "./events/interactionCreate.js";
 
-/**
- * Import Event handlers
- */
-import { readyEvt } from "./events/ready";
-/**
- * Init Discord client
- */
-export const client = new Client({
+const client = new Client({
   intents: [GatewayIntentBits.Guilds],
 });
 
 /**
- * Discord bot event listeners
+ * This event will run if the bot starts, and logs in, successfully. Also sets the bot's activity.
  */
-client.on(Events.ClientReady, () => {
-  botStatus.status = "online";
-  readyEvt(client);
-});
-
-client.on(Events.ShardDisconnect, () => {
-  botStatus.status = "offline";
-});
-
-client.on(Events.ShardError, () => {
-  botStatus.status = "error";
+client.on(Events.ClientReady, async () => {
+  try {
+    readyEvent(client);
+  } catch (err) {
+    logger.error(
+      "Discord - Event (Ready)",
+      "Error during client ready event",
+      err
+    );
+    process.exit(1);
+  }
 });
 
 /**
- * Connect to the database
+ * This event will run every time the bot joins a guild.
  */
-prismaConnect();
-
-/**
- * Start API server.
- */
-api.listen(api.get("port"), () => {
-  consola.ready({
-    message: `[API] Listening on http://${api.get("host")}:${api.get("port")}`,
-    badge: true,
-    timestamp: new Date(),
-    level: "info",
-  });
-});
-
-api.on("error", (err) => {
-  consola.error({
-    message: `[API] ${err}`,
-    badge: true,
-    timestamp: new Date(),
-    level: "error",
-  });
-  process.exit(1);
+client.on(Events.GuildCreate, (guild) => {
+  guildCreateEvent(guild);
 });
 
 /**
- * Start Discord bot
+ * This event will run every time the bot leaves a guild.
  */
-client.login(DISCORD_TOKEN);
+client.on(Events.GuildDelete, (guild) => {
+  guildDeleteEvent(guild);
+});
+
+/**
+ * Handle interactionCreate events.
+ */
+client.on(Events.InteractionCreate, (interaction) => {
+  interactionCreateEvent(client, interaction);
+});
+
+client.login(env.DISCORD_APPLICATION_BOT_TOKEN);
+
+/**
+ * Initialize BullMQ worker to handle background jobs.
+ */
+import { Queue } from "bullmq";
+import worker from "./worker/index.js";
+
+const queueName = "community-bot-jobs";
+
+const queue = new Queue(queueName, {
+  connection: env.REDIS_URL
+    ? { url: env.REDIS_URL }
+    : { host: "localhost", port: 6379 },
+});
+
+worker(queue);
+
+export default client;

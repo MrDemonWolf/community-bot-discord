@@ -1,35 +1,30 @@
 import type { Guild } from "discord.js";
-import consola from "consola";
 
-import { prisma } from "../database";
+import { prisma } from "../database/index.js";
+import logger from "../utils/logger.js";
 
-export async function guildDelete(guild: Guild) {
+export async function guildDeleteEvent(guild: Guild): Promise<void> {
   try {
-    const guildExists = await prisma.discordGuild.findUnique({
-      where: { guildId: guild.id },
+    /**
+     * Delete the guild from the database.
+     */
+    await prisma.guild.delete({
+      where: {
+        guildId: guild.id,
+      },
     });
 
-    if (!guildExists) {
-      return consola.info({
-        message: `[Discord Event Logger - GuildDeleteEvt] Skipping non-existent guild ${guild.name} (ID: ${guild.id})`,
-        badge: true,
-      });
-    }
-
-    await prisma.discordGuild.delete({
-      where: { guildId: guild.id },
-    });
-
-    consola.success({
-      message: `[Discord Event Logger - GuildDeleteEvt] Deleted guild ${guild.name} (ID: ${guild.id}) from the database`,
-      badge: true,
+    /**
+     * Show the bot has left a guild in the console.
+     */
+    logger.discord.guildLeft(guild.name, guild.id);
+    logger.database.operation("Guild removed from database", {
+      guildId: guild.id,
     });
   } catch (err) {
-    consola.error({
-      message: `[Discord Event Logger - GuildDeleteEvt] Error deleting guild from database: ${err}`,
-      badge: true,
-      level: "error",
-      timestamp: new Date(),
+    logger.error("Discord - Event (Guild Delete)", "Error leaving guild", err, {
+      guildId: guild.id,
+      guildName: guild.name,
     });
   }
 }

@@ -1,63 +1,57 @@
 import type { Client } from "discord.js";
-import cron from "node-cron";
-import consola from "consola";
 
-import { prisma } from "../database";
-import { setActivity } from "../utils/setActivity";
+import setActivity from "../worker/jobs/setActivity.js";
+import { pruneGuilds, ensureGuildExists } from "../utils/guildDatabase.js";
+import logger from "../utils/logger.js";
 
-export async function readyEvt(client: Client) {
-  if (!client.user) {
-    consola.error({
-      message: `[Discord Event Logger - ReadyEvt] Discord bot is not ready`,
-      badge: true,
-      level: "error",
-      timestamp: new Date(),
-    });
-    process.exit(1);
+/**
+ * Import slash commands from the commands folder.
+ */
+
+export async function readyEvent(client: Client) {
+  try {
+    /**
+     * Show the bot is ready in the console.
+     */
+    const username = client.user?.tag || "Unknown";
+    const guildCount = client.guilds.cache.size;
+
+    logger.discord.ready(username, guildCount);
+
+    /**
+     * Check if the bot is not in a guild anymore and remove it from the database.
+     */
+    await pruneGuilds(client);
+
+    /**
+     * Check if guilds exist in the database and add them if they don't.
+     */
+    await ensureGuildExists(client);
+
+    /**
+     * Register slash commands.
+     */
+    logger.info("Discord - Slash Commands", "Registering commands");
+
+    await client.application?.commands.set([]);
+
+    const commands = await client.application?.commands.fetch();
+    const commandNames = commands?.map((command) => command.name) || [];
+
+    logger.success(
+      "Discord - Slash Commands",
+      `Registered ${commandNames.length} commands`,
+      {
+        commands: commandNames,
+        timestamp: new Date().toISOString(),
+      }
+    );
+  } catch (err) {
+    logger.error("Discord - Event (Ready)", "Error during ready event", err);
   }
 
-  consola.ready({
-    message: "[Discord Event Logger - ReadyEvt] Discord bot is ready",
-    badge: true,
-    timestamp: new Date(),
-  });
-
   /**
-   * Check if guilds exist in the database and add them if they don't.
+   * Apply the bot's activity status on first run then the worker will handle it every configured interval.
    */
-  const currentGuilds = await prisma.discordGuild.findMany();
-
-  const guildsToAdd = client.guilds.cache.filter(
-    (guild) =>
-      !currentGuilds.some((currentGuild) => currentGuild.guildId === guild.id)
-  );
-
-  guildsToAdd.forEach(async (guild) => {
-    try {
-      await prisma.discordGuild.create({
-        data: {
-          guildId: guild.id,
-        },
-      });
-      consola.success({
-        message: `[Discord Event Logger - ReadyEvt] Created guild ${guild.name} (ID: ${guild.id}) in the database`,
-        badge: true,
-      });
-    } catch (err) {
-      console.error({
-        message: `[Discord Event Logger - ReadyEvt] Error creating guild in database: ${err}`,
-        badge: true,
-        level: "error",
-        timestamp: new Date(),
-      });
-    }
-  });
-
-  /**
-   * Apply the bot's activity status on first run and every 60 minutes.
-   */
-  setActivity(client);
-  cron.schedule("0 * * * *", () => {
-    setActivity(client);
-  });
+  await setActivity(client);
 }

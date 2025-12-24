@@ -1,0 +1,62 @@
+import type { Queue } from "bullmq";
+
+import { Worker, Job } from "bullmq";
+
+import client from "../app.js";
+import redisClient from "../redis/index.js";
+import env from "../utils/env.js";
+import logger from "../utils/logger.js";
+import { cronToText } from "../utils/cronParser.js";
+
+/**
+ * Import worker jobs
+ */
+import setActivity from "./jobs/setActivity.js";
+
+const worker = new Worker(
+  "fluffboost-jobs",
+  async (job: Job) => {
+    switch (job.name) {
+      case "set-activity":
+        return setActivity(client);
+      default:
+        throw new Error(`No job found with name ${job.name}`);
+    }
+  },
+  {
+    connection: redisClient,
+  }
+);
+
+worker.on("completed", (job) => {
+  logger.success("Worker", `Job ${job.id} of type ${job.name} has completed`);
+});
+
+worker.on("failed", (job, err) => {
+  logger.error(
+    "Worker",
+    `Job ${job?.id} of type ${job?.name} has failed with error ${err.message}`,
+    err
+  );
+});
+
+export default (queue: Queue) => {
+  // Add jobs to the queue
+  queue.add(
+    "set-activity",
+    { client: null }, // client will be set in the job processor
+    {
+      repeat: {
+        every: env.DISCORD_ACTIVITY_INTERVAL_MINUTES * 60 * 1000, // minutes to ms
+      },
+      removeOnComplete: true,
+      removeOnFail: false,
+    }
+  );
+
+  logger.info("Worker", "Jobs have been added to the queue", {
+    activityCron: cronToText(
+      `*/${env.DISCORD_ACTIVITY_INTERVAL_MINUTES} * * * *`
+    ),
+  });
+};

@@ -1,37 +1,37 @@
 import type { Guild } from "discord.js";
-import consola from "consola";
 
-import { prisma } from "../database";
+import { prisma } from "../database/index.js";
+import logger from "../utils/logger.js";
 
-export async function guildCreate(guild: Guild) {
+export async function guildCreateEvent(guild: Guild): Promise<void> {
   try {
-    const existingGuild = await prisma.discordGuild.findUnique({
-      where: { guildId: guild.id },
-    });
+    /**
+     * Show the bot has joined a new guild in the console.
+     * This is shared across all shards.
+     */
+    logger.discord.guildJoined(guild.name, guild.id, guild.memberCount);
 
-    if (existingGuild) {
-      return consola.info({
-        message: `[Discord Event Logger - GuildCreateEvt] Skipping duplicate guild ${guild.name} (ID: ${guild.id})`,
-        badge: true,
-      });
-    }
-
-    await prisma.discordGuild.create({
+    /**
+     * Add the guild to the database.
+     */
+    const guildData = await prisma.guild.create({
       data: {
         guildId: guild.id,
       },
     });
 
-    consola.success({
-      message: `[Discord Event Logger - GuildCreateEvt] Created guild ${guild.name} (ID: ${guild.id}) in the database`,
-      badge: true,
+    logger.database.operation("Guild added to database", {
+      guildId: guildData.guildId,
     });
   } catch (err) {
-    console.error({
-      message: `[Discord Event Logger - GuildCreateEvt] Error creating guild in database: ${err}`,
-      badge: true,
-      level: "error",
-      timestamp: new Date(),
-    });
+    logger.error(
+      "Discord - Event (Guild Create)",
+      "Error joining a new guild",
+      err,
+      {
+        guildId: guild.id,
+        guildName: guild.name,
+      }
+    );
   }
 }
