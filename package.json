@@ -13,7 +13,7 @@
     "prisma:push": "prisma db push",
     "prisma:pull": "prisma db pull",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate push",
+    "prisma:migrate": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "test": "cross-env NODE_ENV=test mocha tests --exit"
   },
