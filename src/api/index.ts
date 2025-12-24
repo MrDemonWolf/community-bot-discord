@@ -69,7 +69,7 @@ if (env.NODE_ENV === "production") {
  * @param {number} port - Port
  */
 app.set("host", env.HOST || "localhost");
-app.set("port", env.PORT || 8080);
+app.set("port", env.PORT || 3000);
 
 /**
  * Initialize routes
