@@ -2,32 +2,45 @@ name: community-bot
 services:
   postgres:
     image: 'postgres:16-alpine'
+    user: postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: community-bot
+      POSTGRES_DB: postgres
     ports:
-      - '5432:5432'
+      - '127.0.0.1:5432:5432'
     volumes:
       - 'community-bot-postgres-data:/var/lib/postgresql/data'
     healthcheck:
       test:
-        - CMD-SHELL
-        - pg_isready -U postgres -d community-bot
-      interval: 2s
-      timeout: 10s
-      retries: 15
-  redis:
-    image: 'redis:7.2-alpine'
-    ports:
-      - '6379:6379'
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - redis-cli ping || exit 1
-      interval: 30s
+        - CMD
+        - pg_isready
+        - '-U'
+        - postgres
+        - '-d'
+        - postgres
+      interval: 5s
       timeout: 20s
-      retries: 5
-    
+      retries: 10
+  redis:
+    image: 'redis:7-alpine'
+    ports:
+      - '127.0.0.1:6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 20s
+      retries: 10
+  bot: 
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - '8080:8080'
+    depends_on:
+      - postgres
+      
 volumes:
   community-bot-postgres-data:
