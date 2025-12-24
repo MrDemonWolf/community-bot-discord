@@ -1,5 +1,5 @@
 import type { Client } from "discord.js";
-import type { DiscordGuild } from "../prisma/generated/prisma/client.js";
+import type { DiscordGuild } from "../generated/prisma/client.js";
 
 import { prisma } from "../database/index.js";
 import logger from "./logger.js";
