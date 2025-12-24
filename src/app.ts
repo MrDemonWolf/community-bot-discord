@@ -1,7 +1,10 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
-
+import { PrismaClient } from "./generated/prisma/client.js";
+import { PrismaPg } from "@prisma/adapter-pg";
 import env from "./utils/env.js";
 import logger from "./utils/logger.js";
+import api from "./api/index.js";
+import redis from "./redis/index.js";
 
 /**
  * Import events from the events folder.
@@ -69,5 +72,50 @@ const queue = new Queue(queueName, {
 });
 
 worker(queue);
+
+/**
+ * Load Prsima Client and connect to Prisma Server if failed to connect, throw error.
+ */
+const adapter = new PrismaPg({
+  connectionString: env.DATABASE_URL,
+});
+
+const prisma = new PrismaClient({ adapter });
+
+prisma
+  .$connect()
+  .then(async () => {
+    await prisma.$disconnect();
+    logger.database.connected("Prisma");
+  })
+  .catch(async (err: Error) => {
+    logger.database.error("Prisma", err);
+    process.exit(1);
+  });
+
+/**
+ * Load Redis connection and connect to Redis Server if failed to connect, throw error.
+ */
+redis
+  .on("connect", () => {
+    logger.database.connected("Redis");
+  })
+  .on("error", (err: Error) => {
+    logger.database.error("Redis", err);
+    process.exit(1);
+  });
+
+/**
+ * Start API server.
+ */
+
+api.listen(api.get("port"), () => {
+  logger.api.started(api.get("host"), api.get("port"));
+});
+
+api.on("error", (err: unknown) => {
+  logger.api.error(err);
+  process.exit(1);
+});
 
 export default client;
