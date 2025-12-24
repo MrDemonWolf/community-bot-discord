@@ -10,7 +10,7 @@ import env from "../utils/env.js";
  */
 import statusRoute from "./routes/status.js";
 
-const app = express();
+const app: express.Application = express();
 /**
  * Express configuration (express.json, express.urlencoded, helmet, morgan, cors)
  */

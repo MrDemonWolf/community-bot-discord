@@ -14,7 +14,7 @@ export async function guildCreateEvent(guild: Guild): Promise<void> {
     /**
      * Add the guild to the database.
      */
-    const guildData = await prisma.guild.create({
+    const guildData = await prisma.discordGuild.create({
       data: {
         guildId: guild.id,
       },

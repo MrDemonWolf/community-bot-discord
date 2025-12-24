@@ -14,7 +14,7 @@ import { cronToText } from "../utils/cronParser.js";
 import setActivity from "./jobs/setActivity.js";
 
 const worker = new Worker(
-  "fluffboost-jobs",
+  "community-bot-jobs",
   async (job: Job) => {
     switch (job.name) {
       case "set-activity":

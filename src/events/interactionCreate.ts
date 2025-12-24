@@ -9,7 +9,7 @@ import logger from "../utils/logger.js";
  */
 
 export async function interactionCreateEvent(
-  client: Client,
+  _client: Client,
   interaction: Interaction
 ) {
   try {

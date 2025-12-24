@@ -1,13 +1,13 @@
-import { Router } from "express";
+import express from "express";
 import logger from "../../utils/logger.js";
 
-const router = Router();
+const router: express.Router = express.Router();
 
 /**
  * GET /status
  * Returns the status of the API
  */
-router.get("/", async (req, res) => {
+router.get("/", async (_req, res) => {
   try {
     res.json({
       uptime: process.uptime(),

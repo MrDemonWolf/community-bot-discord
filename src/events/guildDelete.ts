@@ -8,7 +8,7 @@ export async function guildDeleteEvent(guild: Guild): Promise<void> {
     /**
      * Delete the guild from the database.
      */
-    await prisma.guild.delete({
+    await prisma.discordGuild.delete({
       where: {
         guildId: guild.id,
       },
