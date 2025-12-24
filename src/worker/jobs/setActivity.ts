@@ -64,9 +64,15 @@ export default async (client: Client) => {
     //   });
     //   return true;
     // }
+    const safeActivityType = getActivityType(defaultActivityType);
+
+    client.user.setActivity(defaultActivity, {
+      type: safeActivityType,
+      url: defaultActivityUrl,
+    });
     logger.success("Discord - Activity", "Activity has been set", {
       activity: defaultActivity,
-      type: getActivityType(defaultActivityType),
+      type: safeActivityType,
       url: defaultActivityUrl,
     });
     return true;
