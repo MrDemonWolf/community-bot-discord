@@ -177,6 +177,6 @@ src/
 
 If you have any questions, suggestions, or feedback, feel free to reach out!
 
-- Discord: [Join my server](https://mrdwolf.com/discord)
+- Discord: [Join my server](https://mrdwolf.net/discord)
 
 Made with love by <a href="https://www.mrdemonwolf.com">MrDemonWolf, Inc.</a>
