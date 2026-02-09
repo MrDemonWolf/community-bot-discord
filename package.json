@@ -10,6 +10,7 @@
     "build": "rm -rf dist/ && tsc -p . --outDir dist",
     "lint": "eslint . --ext .js --fix",
     "format": "prettier-eslint --write $PWD/'**/*.{js,json}'",
+    "prisma:sync": "bash scripts/sync-prisma.sh",
     "prisma:push": "prisma db push",
     "prisma:pull": "prisma db pull",
     "prisma:generate": "prisma generate",
