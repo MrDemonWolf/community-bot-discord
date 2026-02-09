@@ -2,11 +2,8 @@ import type { Client } from "discord.js";
 
 import setActivity from "../worker/jobs/setActivity.js";
 import { pruneGuilds, ensureGuildExists } from "../utils/guildDatabase.js";
+import commands from "../commands/index.js";
 import logger from "../utils/logger.js";
-
-/**
- * Import slash commands from the commands folder.
- */
 
 export async function readyEvent(client: Client) {
   try {
@@ -33,10 +30,12 @@ export async function readyEvent(client: Client) {
      */
     logger.info("Discord - Slash Commands", "Registering commands");
 
-    await client.application?.commands.set([]);
+    const commandData = [...commands.values()].map((cmd) => cmd.data);
+    await client.application?.commands.set(commandData);
 
-    const commands = await client.application?.commands.fetch();
-    const commandNames = commands?.map((command) => command.name) || [];
+    const registeredCommands = await client.application?.commands.fetch();
+    const commandNames =
+      registeredCommands?.map((command) => command.name) || [];
 
     logger.success(
       "Discord - Slash Commands",
