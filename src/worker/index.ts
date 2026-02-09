@@ -12,6 +12,7 @@ import { cronToText } from "../utils/cronParser.js";
  * Import worker jobs
  */
 import setActivity from "./jobs/setActivity.js";
+import checkTwitchStreams from "./jobs/checkTwitchStreams.js";
 
 const worker = new Worker(
   "community-bot-jobs",
@@ -19,6 +20,8 @@ const worker = new Worker(
     switch (job.name) {
       case "set-activity":
         return setActivity(client);
+      case "check-twitch-streams":
+        return checkTwitchStreams(client);
       default:
         throw new Error(`No job found with name ${job.name}`);
     }
@@ -54,9 +57,22 @@ export default (queue: Queue) => {
     }
   );
 
+  queue.add(
+    "check-twitch-streams",
+    {},
+    {
+      repeat: {
+        every: 90 * 1000, // 90 seconds
+      },
+      removeOnComplete: true,
+      removeOnFail: false,
+    }
+  );
+
   logger.info("Worker", "Jobs have been added to the queue", {
     activityCron: cronToText(
       `*/${env.DISCORD_ACTIVITY_INTERVAL_MINUTES} * * * *`
     ),
+    twitchPollInterval: "Every 90 seconds",
   });
 };
