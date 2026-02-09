@@ -77,6 +77,27 @@ Follow these steps to create your Discord bot application and obtain your bot cr
 
 ---
 
+## Prisma Schema Sync
+
+**Do NOT edit `prisma/schema.prisma` directly.** The source of truth for all Prisma models is the monorepo at `../community-bot/packages/db/prisma/schema/`.
+
+To sync after schema changes in the monorepo:
+
+```bash
+pnpm prisma:sync        # Pull models from monorepo → prisma/schema.prisma
+pnpm prisma:generate    # Regenerate the Prisma client
+```
+
+To add or modify models, edit the `.prisma` files in `../community-bot/packages/db/prisma/schema/`, then run the commands above.
+
+Migrations are owned by this project. After schema changes:
+
+```bash
+pnpm prisma:sync && pnpm prisma:generate && pnpm prisma:migrate
+```
+
+---
+
 ## License
 
 ![GitHub license](https://img.shields.io/github/license/MrDemonWolf/community-bot-twitch.svg?style=for-the-badge&logo=github)

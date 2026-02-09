@@ -11,6 +11,7 @@
     "lint": "eslint . --ext .ts,.js --fix",
     "lint:check": "eslint . --ext .ts,.js",
     "format": "prettier-eslint --write $PWD/'**/*.{js,json}'",
+    "prisma:sync": "bash scripts/sync-prisma.sh",
     "prisma:push": "prisma db push",
     "prisma:pull": "prisma db pull",
     "prisma:generate": "prisma generate",

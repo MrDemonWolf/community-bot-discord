@@ -56,6 +56,7 @@ const envSchema = z.object({
   OWNER_ID: z.string().min(1, "Owner ID is required"),
   MAIN_GUILD_ID: z.string().min(1, "Main guild ID is required"),
   MAIN_CHANNEL_ID: z.string().min(1, "Main channel ID is required"),
+  TWITCH_CLIENT_ID: z.string().min(1, "Twitch client ID is required"),
   HOST: z.string().optional(),
   PORT: z.string().optional(),
   CORS_ORIGIN: z.string().default("*"),
